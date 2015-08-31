@@ -1,5 +1,8 @@
-//record and play from processing
 //waveform display
+//beat markers
+//arduino
+//change tempo
+//loop single bars
 
 import oscP5.*;
 import netP5.*;
