@@ -75,6 +75,7 @@ OSCdef(\recon, {
 	var tr;
 	tr = msg[1].asInteger;
 	~recsynths[tr].set(\idxbus, ~ixbus);
+	"on".post; tr.postln;
 }, "/recon");
 
 OSCdef(\recoff, {
@@ -97,6 +98,12 @@ OSCdef(\pause, {
 	tr = msg[1].asInteger;
 	~playsynths[tr].set(\idxbus, ~obus);
 }, "/pause");
+
+OSCdef(\wavfrm, {
+	arg msg;
+	var tr = msg[1].asInteger;
+	~waveform.value(~trx[tr], tr);
+}, "/wavfrm");
 )
 
 ~ix = Synth(\bufidx, [\buf, ~ixbuf, \bus, ~ixbus, \kbus, ~ixkbus], ~ixgr);
@@ -107,3 +114,4 @@ OSCdef(\pause, {
 ~recsynths[1].set(\idxbus, ~ixbus); //record
 ~recsynths[1].set(\idxbus, ~obus); //stop record
 ~waveform.value(~trx[1], 1);
+~waveform.value(~trx[0], 0);
