@@ -89,6 +89,42 @@ void draw() {
    /**/ if (rectogs[1]==1) osc.send("/recon", new Object[]{1}, sc);
    /**/ else osc.send("/recoff", new Object[]{1}, sc);
       }
+      //rec track 3 - button 2
+      if( mtemp2[0].equals("bt2") ){
+        rectogs[2] = ( rectogs[2]+int(mtemp2[1]) )%2;
+   /**/ if (rectogs[2]==1) osc.send("/recon", new Object[]{2}, sc);
+   /**/ else osc.send("/recoff", new Object[]{2}, sc);
+      }
+      //rec track 4 - button 3
+      if( mtemp2[0].equals("bt3") ){
+        rectogs[3] = ( rectogs[3]+int(mtemp2[1]) )%2;
+   /**/ if (rectogs[3]==1) osc.send("/recon", new Object[]{3}, sc);
+   /**/ else osc.send("/recoff", new Object[]{3}, sc);
+      }
+      //play/pause track 0 - button 5
+      if( mtemp2[0].equals("bt4") ){
+        playtogs[0] = ( playtogs[0]+int(mtemp2[1]) )%2;
+   /**/ if (playtogs[0]==1) osc.send("/play", new Object[]{0}, sc);
+   /**/ else osc.send("/pause", new Object[]{0}, sc);
+      }
+      //play/pause track 1 - button 6
+      if( mtemp2[0].equals("bt5") ){
+        playtogs[1] = ( playtogs[1]+int(mtemp2[1]) )%2;
+   /**/ if (playtogs[1]==1) osc.send("/play", new Object[]{1}, sc);
+   /**/ else osc.send("/pause", new Object[]{1}, sc);
+      }
+      //play/pause track 2 - button 7
+      if( mtemp2[0].equals("bt6") ){
+        playtogs[2] = ( playtogs[2]+int(mtemp2[1]) )%2;
+   /**/ if (playtogs[2]==1) osc.send("/play", new Object[]{2}, sc);
+   /**/ else osc.send("/pause", new Object[]{2}, sc);
+      }
+      //play/pause track 3 - button 8
+      if( mtemp2[0].equals("bt6") ){
+        playtogs[3] = ( playtogs[3]+int(mtemp2[1]) )%2;
+   /**/ if (playtogs[3]==1) osc.send("/play", new Object[]{3}, sc);
+   /**/ else osc.send("/pause", new Object[]{3}, sc);
+      }
     }
   }
 
