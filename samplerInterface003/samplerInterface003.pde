@@ -1,11 +1,11 @@
-//start and stop audio from processing
-//fix waveform function in sc
+//play range
+//hook up red buttons
+//make performance
 //finish this sequencer and draw a line under it
 //clean up code
 //make tutorial videos and assignments
 //separate cursors
 //play range
-//hook up red buttons
 //change tempo
 
 
@@ -80,14 +80,14 @@ void draw() {
       //rec track 1 - button 0
       if( mtemp2[0].equals("bt0") ){
         rectogs[0] = ( rectogs[0]+int(mtemp2[1]) )%2;
-        if (rectogs[0]==1) osc.send("/recon", new Object[]{0}, sc);
-        else osc.send("/recoff", new Object[]{0}, sc);
+   /**/ if (rectogs[0]==1) osc.send("/recon", new Object[]{0}, sc);
+   /**/ else osc.send("/recoff", new Object[]{0}, sc);
       }
       //rec track 2 - button 1
       if( mtemp2[0].equals("bt1") ){
         rectogs[1] = ( rectogs[1]+int(mtemp2[1]) )%2;
-        if (rectogs[1]==1) osc.send("/recon", new Object[]{1}, sc);
-        else osc.send("/recoff", new Object[]{1}, sc);
+   /**/ if (rectogs[1]==1) osc.send("/recon", new Object[]{1}, sc);
+   /**/ else osc.send("/recoff", new Object[]{1}, sc);
       }
     }
   }
@@ -123,7 +123,6 @@ void draw() {
     }
   }
 
-
   //record & play highlighting
   for (int i=0; i<numtrx; i++) {
     if (playtogs[i]==0) {
@@ -133,12 +132,12 @@ void draw() {
     if (rectogs[i]==1) {
       fill(255, 105, 180, 120);
       rect(0, trht*i, w, trht);
-      osc.send("/wavfrm", new Object[]{i}, sc); 
+ /**/ if((frameCount%6)==0)osc.send("/wavfrm", new Object[]{i}, sc); 
     }
   }
 
   //Cursor
-  osc.send("/getidx", new Object[]{}, sc); //get current cursor location from sc
+/**/ osc.send("/getidx", new Object[]{}, sc); //get current cursor location from sc
   strokeWeight(3);
   stroke(153, 255, 0);
   line(cx, 0, cx, h);
@@ -153,27 +152,31 @@ void mousePressed() {
   for (int i=0; i<numtrx; i++) {
     if ( mouseX<(w/2) && mouseY>(trht*i) && mouseY<((trht*i)+trht) ) {
       rectogs[i] = (rectogs[i]+1)%2;
-      if (rectogs[i]==1) osc.send("/recon", new Object[] {i}, sc);
-      else osc.send("/recoff", new Object[] {i}, sc);
+ /**/ if (rectogs[i]==1) osc.send("/recon", new Object[] {i}, sc);
+ /**/ else osc.send("/recoff", new Object[] {i}, sc);
     }
     if ( mouseX>(w/2) && mouseY>(trht*i) && mouseY<((trht*i)+trht) ) {
       playtogs[i] = (playtogs[i]+1)%2;
-      if (playtogs[i]==1) osc.send("/play", new Object[] {
-        i
-      }
-      , sc);
-      else osc.send("/pause", new Object[] {
-        i
-      }
-      , sc);
+ /**/ if (playtogs[i]==1) osc.send("/play", new Object[]{i}, sc);
+ /**/ else osc.send("/pause", new Object[]{i}, sc);
     }
   }
 }
 
+void keyPressed(){
+  if(key=='s'){
+/**/osc.send("/stop", new Object[]{}, sc);
+    for (int i=0; i<samparrays.length; i++) {
+      for (int j=0; j<samparrays[i].length; j++) samparrays[i][j]=0.0;
+    } 
+  }
+/**/if(key=='r')osc.send("/restart", new Object[]{}, sc);
+}
+
 void oscEvent(OscMessage msg) {
+  //get waveform data and store in samparrays
   if ( msg.checkAddrPattern("/sbuf") ) {
     int trkn = msg.get(0).intValue();
-    println(trkn);
     for (int i=0; i<bufsize; i++) {
       if (i>0) samparrays[trkn][i] = msg.get(i).floatValue();
     }

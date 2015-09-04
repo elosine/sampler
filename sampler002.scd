@@ -3,7 +3,7 @@
 ~recsynths = Array.newClear(~numtrx);
 ~playsynths = Array.newClear(~numtrx);
 ~ixbuf = Buffer.alloc(s, s.sampleRate*16.0, 1);
-~trx = {Buffer.alloc(s, s.sampleRate * 16.0, 1)}!16;
+~trx = {Buffer.alloc(s, s.sampleRate * 16.0, 1)}!~numtrx;
 ~ixbus = Bus.audio(s);
 ~ixkbus = Bus.control(s);
 ~ebus = Bus.control(s);
@@ -104,14 +104,32 @@ OSCdef(\wavfrm, {
 	var tr = msg[1].asInteger;
 	~waveform.value(~trx[tr], tr);
 }, "/wavfrm");
+
+OSCdef(\stop, {
+	~ix.free;
+	~numtrx.do{|ix| ~recsynths[ix].free; ~playsynths[ix].free};
+	~trx.do{|it| it.free};
+	~trx = nil;
+}, "/stop");
+
+OSCdef(\restart, {
+	~trx = {Buffer.alloc(s, s.sampleRate * 16.0, 1)}!16;
+	~ix = Synth(\bufidx, [\buf, ~ixbuf, \bus, ~ixbus, \kbus, ~ixkbus], ~ixgr);
+	~numtrx.do{ |ix|
+		~recsynths[ix] = Synth(\bufrec, [\idxbus, ~ebus, \buf, ~trx[ix]], ~ingr);
+		~playsynths[ix] = Synth(\bufpl, [\idxbus, ~ixbus, \buf, ~trx[ix]], ~ogr)
+	};
+}, "/restart");
 )
 
+(
 ~ix = Synth(\bufidx, [\buf, ~ixbuf, \bus, ~ixbus, \kbus, ~ixkbus], ~ixgr);
+~numtrx.do{ |ix|
+	~recsynths[ix] = Synth(\bufrec, [\idxbus, ~ebus, \buf, ~trx[ix]], ~ingr);
+	~playsynths[ix] = Synth(\bufpl, [\idxbus, ~ixbus, \buf, ~trx[ix]], ~ogr)
+};
+)
 
-~numtrx.do{ |ix| ~recsynths[ix] = Synth(\bufrec, [\idxbus, ~ebus, \buf, ~trx[ix]], ~ingr) };
-~numtrx.do{ |ix| ~playsynths[ix] = Synth(\bufpl, [\idxbus, ~ixbus, \buf, ~trx[ix]], ~ogr) };
 
-~recsynths[1].set(\idxbus, ~ixbus); //record
-~recsynths[1].set(\idxbus, ~obus); //stop record
-~waveform.value(~trx[1], 1);
-~waveform.value(~trx[0], 0);
+
+
