@@ -117,7 +117,8 @@ OSCdef(\restart, {
 	~ix = Synth(\bufidx, [\buf, ~ixbuf, \bus, ~ixbus, \kbus, ~ixkbus], ~ixgr);
 	~numtrx.do{ |ix|
 		~recsynths[ix] = Synth(\bufrec, [\idxbus, ~ebus, \buf, ~trx[ix]], ~ingr);
-		~playsynths[ix] = Synth(\bufpl, [\idxbus, ~ixbus, \buf, ~trx[ix]], ~ogr)
+		//~playsynths[ix] = Synth(\bufpl, [\idxbus, ~ixbus, \buf, ~trx[ix], \obs, 0], ~ogr)
+		~playsynths[ix] = Synth(\bufpl, [\idxbus, ~ixbus, \buf, ~trx[ix], \obs, 1], ~ogr)
 	};
 }, "/restart");
 )

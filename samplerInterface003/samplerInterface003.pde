@@ -120,7 +120,7 @@ void draw() {
    /**/ else osc.send("/pause", new Object[]{2}, sc);
       }
       //play/pause track 3 - button 8
-      if( mtemp2[0].equals("bt6") ){
+      if( mtemp2[0].equals("bt7") ){
         playtogs[3] = ( playtogs[3]+int(mtemp2[1]) )%2;
    /**/ if (playtogs[3]==1) osc.send("/play", new Object[]{3}, sc);
    /**/ else osc.send("/pause", new Object[]{3}, sc);
