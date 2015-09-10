@@ -53,7 +53,7 @@ SynthDef(\bufpl, {
 		var bufarray, sampsize, resamp, resampArray, ct;
 		bufarray = array;
 		//RESAMPLE TO MANAGEABLE SIZE
-		sampsize = 1000;
+		sampsize = 975; //Make sure to change this if you change pixel width of sampler
 		resamp = (bufarray.size/sampsize).round;
 		resampArray = Array.newClear(sampsize+2); //This is the new resampled array
 		ct = 0; //A counter for the resampled array
@@ -73,18 +73,19 @@ OSCdef( \getidx,{ ~ixkbuses[0].get({arg val; ~proc.sendMsg("/ix", val)}) }, "/ge
 OSCdef( \gettridx,{
 	arg msg;
 	var tr = msg[1].asInteger;
-	~ixkbuses[tr].get({arg val; ~proc.sendMsg("/trix", tr, val.asFloat)}) ;
+	~ixkbuses[tr+1].get({arg val; ~proc.sendMsg("/trix", tr, val.asFloat)}) ;
 }, "/gettridx");
 
 OSCdef( \setidx,{
 	arg msg;
-	var trnum, start, stop;
+	var trnum, start, end;
+	msg.postln;
 	trnum = msg[1].asInteger;
 	start = msg[2].asFloat;
-	stop = msg[3].asFloat;
-	~ixsynth[trnum+1].set(\start,  start); //trnum+1because ix track 0 is master track
-	~ixsynth[trnum+1].set(\stop,  stop);
-	~playsynths[trnum].set(\idxbus, ~ixbusses[trnum+1]);
+	end = msg[3].asFloat;
+	~ixsynths[trnum+1].set(\start,  start); //trnum+1because ix track 0 is master track
+	~ixsynths[trnum+1].set(\end,  end);
+	~playsynths[trnum].set(\idxbus, ~ixbuses[trnum+1]);
 }, "/setidx");
 
 //record and play
@@ -105,9 +106,10 @@ OSCdef(\recoff, {
 
 OSCdef(\play, {
 	arg msg;
-	var tr;
+	var tr, ixb;
 	tr = msg[1].asInteger;
-	~playsynths[tr].set(\idxbus, ~ixbuses[0]);
+	ixb = msg[2].asInteger;
+	~playsynths[tr].set(\idxbus, ~ixbuses[ixb]);
 }, "/play");
 
 OSCdef(\pause, {
@@ -148,19 +150,10 @@ OSCdef(\restart, {
 )
 
 
+new color for scrub
+button for returning track to master cursor
+envelope for record & playback loop points
+fix ~zerobus for switching off/pausing
+cursor speed/direction
 
-make scrubber
-    mouse release
-    send osc with start stop & track number for track cursor
-    activate get index routine for that track
-    activate new cursor
-
-
-
-use track location function
-processing sends sc start and stop on mouse release
-change index start and stop
-change play to new index
-back to processing: new cursor buf activate track cursor
-keyboard cmd back to master cursor
 
