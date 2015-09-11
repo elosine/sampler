@@ -188,7 +188,7 @@ void draw() {
   for (int i=0; i<numtrx; i++) {
     if (ranger[i]==1) {
       noStroke();
-      fill(255, 128, 0, 100);
+      fill(255, 0, 255, 100);
       rect(rangex1[i], trht*i, rangex2[i]-rangex1[i], trht);
     }
   }
@@ -245,7 +245,12 @@ void mousePressed() {
       if (playtogs[i]==1) play(i);
       else pause(i);
     }
-    //for ranger (not touching the record or play buttons
+    //Button to go back to main cursor
+    if ( whichtrack()==i && mouseX<=20 && mouseY>(trht*i)+40 && mouseY<(trht*i)+60 ) {
+      ranger[i] = 0;
+      trcsr[i] = 0;
+      /**/osc.send("/setidx", new Object[]{ -1, 0, 1, 1 }, sc);
+    }
     if ( mouseX>=x0 && mouseY>(trht*i) && mouseY<(trht*(i+1)) ) {
         ranger[i] = 1;
         rangex1[i] = mouseX;
@@ -271,7 +276,7 @@ void mouseReleased() {
           float rx1 = norm(rangex1[i], x0, width);
           float rx2 = norm(rangex2[i], x0, width);
           trcsr[i] = 1;
-          /**/osc.send("/setidx", new Object[]{ i, rx1, rx2 }, sc);
+          /**/osc.send("/setidx", new Object[]{ i, rx1, rx2, 1 }, sc);
         }
       }
   }

@@ -8,7 +8,6 @@
 ~trx = {Buffer.alloc(s, s.sampleRate * 16.0, 1)}!~numtrx; //buffers to hold track audio
 ~ixbuses = {Bus.audio(s)}!(~numtrx+1); //audio rate busses to hold index location
 ~ixkbuses = {Bus.control(s)}!(~numtrx+1); //control rate busses to hold index location, for waveform display
-~zerobus = Bus.audio(s); //zero value index bus to switch to for pause/stop
 ~ixgr = Group.new(); //ix group before all groups
 ~ingr = Group.after(~ixgr); //in group for incomming (rec) audio
 ~ogr = Group.after(~ingr); //out group for outgoing (play) audio
@@ -29,19 +28,21 @@ SynthDef(\bufidx,{
 }).add;
 
 SynthDef(\bufrec, {
-	arg ich=0, idxbus, buf;
-	var in, idx;
+	arg ich=0, idxbus, buf, gate=0;
+	var in, idx, env;
+	env = EnvGen.ar(Env.asr(releaseTime:0.01, curve:0),gate);
 	idx = In.ar(idxbus);
 	in = SoundIn.ar(ich);
-	BufWr.ar(in, buf, idx);
+	BufWr.ar(in*env, buf, idx);
 }).add;
 
 SynthDef(\bufpl, {
-	arg idxbus, obs=0, buf;
-	var idx, sig;
+	arg idxbus, obs=0, buf, gate=1;
+	var idx, sig, env;
+	env = EnvGen.ar(Env.asr(releaseTime:0.01, curve:0),gate);
 	idx = In.ar(idxbus);
 	sig = BufRd.ar(1, buf, idx);
-	Out.ar(obs, sig);
+	Out.ar(obs, sig*env);
 }).add;
 
 ////FUNCTIONS////
@@ -78,13 +79,14 @@ OSCdef( \gettridx,{
 
 OSCdef( \setidx,{
 	arg msg;
-	var trnum, start, end;
-	msg.postln;
+	var trnum, start, end, spd;
 	trnum = msg[1].asInteger;
 	start = msg[2].asFloat;
 	end = msg[3].asFloat;
+	spd = msg[4].asFloat;
 	~ixsynths[trnum+1].set(\start,  start); //trnum+1because ix track 0 is master track
 	~ixsynths[trnum+1].set(\end,  end);
+	~ixsynths[trnum+1].set(\spd,  spd);
 	~playsynths[trnum].set(\idxbus, ~ixbuses[trnum+1]);
 }, "/setidx");
 
@@ -93,7 +95,7 @@ OSCdef(\recon, {
 	arg msg;
 	var tr;
 	tr = msg[1].asInteger;
-	~recsynths[tr].set(\idxbus, ~ixbuses[0]);
+	~recsynths[tr].set(\gate, 1);
 	"on: ".post; tr.postln;
 }, "/recon");
 
@@ -101,7 +103,7 @@ OSCdef(\recoff, {
 	arg msg;
 	var tr;
 	tr = msg[1].asInteger;
-	~recsynths[tr].set(\idxbus, ~zerobus);
+	~recsynths[tr].set(\gate, 0);
 }, "/recoff");
 
 OSCdef(\play, {
@@ -109,14 +111,14 @@ OSCdef(\play, {
 	var tr, ixb;
 	tr = msg[1].asInteger;
 	ixb = msg[2].asInteger;
-	~playsynths[tr].set(\idxbus, ~ixbuses[ixb]);
+	~playsynths[tr].set(\gate, 1);
 }, "/play");
 
 OSCdef(\pause, {
 	arg msg;
 	var tr;
 	tr = msg[1].asInteger;
-	~playsynths[tr].set(\idxbus, ~zerobus);
+	~playsynths[tr].set(\gate, 0);
 }, "/pause");
 
 OSCdef(\wavfrm, {
@@ -135,7 +137,7 @@ OSCdef(\restart, {
 	~trx = {Buffer.alloc(s, s.sampleRate * 16.0, 1)}!16;
 	~numtrx.do{ |ix|
 		~ixsynths[ix] = Synth(\bufidx, [\buf, ~ixbufs[ix], \bus, ~ixbuses[ix], \kbus, ~ixkbuses[ix]], ~ixgr);
-	~recsynths[ix] = Synth(\bufrec, [\idxbus, ~zerobus, \buf, ~trx[ix]], ~ingr);
+	~recsynths[ix] = Synth(\bufrec, [\idxbus,~ixbuses[0], \buf, ~trx[ix]], ~ingr);
 	~playsynths[ix] = Synth(\bufpl, [\idxbus, ~ixbuses[0], \buf, ~trx[ix]], ~ogr)
 	};
 }, "/restart");
@@ -144,16 +146,16 @@ OSCdef(\restart, {
 (
 (~numtrx+1).do{ |ix| ~ixsynths[ix] = Synth(\bufidx, [\buf, ~ixbufs[ix], \bus, ~ixbuses[ix], \kbus, ~ixkbuses[ix]], ~ixgr) };
 ~numtrx.do{ |ix|
-	~recsynths[ix] = Synth(\bufrec, [\idxbus, ~zerobus, \buf, ~trx[ix]], ~ingr);
+	~recsynths[ix] = Synth(\bufrec, [\idxbus, ~ixbuses[0], \buf, ~trx[ix]], ~ingr);
 	~playsynths[ix] = Synth(\bufpl, [\idxbus, ~ixbuses[0], \buf, ~trx[ix]], ~ogr)
 };
 )
 
 
-new color for scrub
-button for returning track to master cursor
-envelope for record & playback loop points
-fix ~zerobus for switching off/pausing
-cursor speed/direction
+use TouchOsc for cursor speed/direction, buy on tablet
+Fix easy pedals
+Clean code and tutorial
+//envelope for record & playback loop points?
+
 
 
