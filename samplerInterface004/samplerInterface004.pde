@@ -249,7 +249,7 @@ void mousePressed() {
     if ( whichtrack()==i && mouseX<=20 && mouseY>(trht*i)+40 && mouseY<(trht*i)+60 ) {
       ranger[i] = 0;
       trcsr[i] = 0;
-      /**/osc.send("/setidx", new Object[]{ -1, 0, 1, 1 }, sc);
+      /**/osc.send("/rsetidx", new Object[]{ i }, sc);
     }
     if ( mouseX>=x0 && mouseY>(trht*i) && mouseY<(trht*(i+1)) ) {
         ranger[i] = 1;
