@@ -9,7 +9,7 @@
  */
 
 
-CapacitiveSensor   cs_4_2 = CapacitiveSensor(4,2);        // 10M resistor between pins 4 & 2, pin 2 is sensor pin, add a wire and or foil if desired
+CapacitiveSensor   cs_4_2 = CapacitiveSensor(21, 14);       // 10M resistor between pins 4 & 2, pin 2 is sensor pin, add a wire and or foil if desired
 //CapacitiveSensor   cs_4_6 = CapacitiveSensor(4,6);        // 10M resistor between pins 4 & 6, pin 6 is sensor pin, add a wire and or foil
 //CapacitiveSensor   cs_4_8 = CapacitiveSensor(4,8);        // 10M resistor between pins 4 & 8, pin 8 is sensor pin, add a wire and or foil
 //CapacitiveSensor   cs_4_10 = CapacitiveSensor(4,10);        // 10M resistor between pins 4 & 8, pin 8 is sensor pin, add a wire and or foil
@@ -19,28 +19,27 @@ boolean g2 = true;
 boolean g3 = true;
 boolean g4 = true;
 
-void setup(){
+void setup() {
   Serial.begin(9600);
 }
 
-void loop()                    
-{
+void loop(){
   long total1 =  cs_4_2.capacitiveSensor(30);
   // long total2 =  cs_4_6.capacitiveSensor(30);
   //  long total3 =  cs_4_8.capacitiveSensor(30);
   //  long total4 =  cs_4_10.capacitiveSensor(30);
 
-
+Serial.println(total1);
   if (total1 > 500) {
-    if(g1) {
+    if (g1) {
       g1 = false;
       Serial.print("cs1:");
       Serial.print(total1, DEC);
       Serial.println(";");
     }
   }
-  else if(total1<=500){
-    g1=true;
+  else if (total1 <= 500) {
+    g1 = true;
   }
 
   /*
@@ -55,7 +54,7 @@ void loop()
    else if(total2<=500){
    g2=true;
    }
-   
+
    if (total3 > 500) {
    if(g3) {
    g3 = false;
@@ -67,7 +66,7 @@ void loop()
    else if(total3<=500){
    g3=true;
    }
-   
+
    if (total4 > 500) {
    if(g4) {
    g4 = false;
@@ -79,12 +78,12 @@ void loop()
    else if(total4<=500){
    g4=true;
    }
-   
-   
-   
+
+
+
    */
 
-  delay(15);                             // arbitrary delay to limit data to serial port 
+  delay(15);                             // arbitrary delay to limit data to serial port
 }
 
 
