@@ -1,4 +1,4 @@
-#include <CapacitiveSensor.h>
+  #include <CapacitiveSensor.h>
 
 //Buttons
 int numbts = 10;
@@ -8,6 +8,7 @@ boolean bgates[10];
 int numcps = 2;
 //CapacitiveSensor cps[] = {CapacitiveSensor(21, 14), CapacitiveSensor(21, 15), CapacitiveSensor(21, 18), CapacitiveSensor(21, 19), CapacitiveSensor(21, 20)};
 CapacitiveSensor cps[] = {CapacitiveSensor(21, 14), CapacitiveSensor(21, 15)};
+//CapacitiveSensor cps[] = {CapacitiveSensor(21, 14)};
 boolean cpsgates[2];
 long cpsval[2];
 void setup() {
@@ -36,21 +37,21 @@ void loop() {
     }
   }
   //Capacitive Sensors
-  //long val = cps[0].capacitiveSensor(30);
-  //Serial.println(val);
+ //long val = cps[0].capacitiveSensor(30);
+ // Serial.println(val);
   for (int i = 0; i < numcps; i++) {
     cpsval[i] = cps[i].capacitiveSensor(30);
     if (cpsval[i] >= 5000) {
       if (cpsgates[i]) {
         cpsgates[i] = false;
-        Serial.print("cps" + String(i) + ":");
+        Serial.print("cs" + String(i) + ":");
         Serial.println(1, DEC);
       }
     }
     else if (cpsval[i] < 500) {
       if (!cpsgates[i]) {
         cpsgates[i] = true;
-        Serial.print("cps" + String(i) + ":");
+        Serial.print("cs" + String(i) + ":");
         Serial.println(0, DEC);
       }
     }

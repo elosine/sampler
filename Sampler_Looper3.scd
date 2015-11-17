@@ -127,6 +127,10 @@ n.sendMsg("/rec", 0, 1, 0);
 n.sendMsg("/rec", 0, 0, 0);
 n.sendMsg("/play", 0, 1, 0);
 n.sendMsg("/play", 0, 0, 0);
+n.sendMsg("/rec", 6, 1, 0);
+n.sendMsg("/rec", 6, 0, 0);
+n.sendMsg("/play", 6, 1, 0);
+n.sendMsg("/play", 6, 0, 0);
 
 /*
 Make contact mic trigger for samples
